@@ -1,0 +1,59 @@
+﻿@using LabaManage.WebMVC.HtmlHelpers;
+@model LabaManage.WebMVC.ViewModels.Journal.JournalEditModel
+
+@{
+    ViewBag.Title = "Журнал посещения";
+}
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h4  class="hidden-xs">Журнал посещения: @Model.Course.Name</h4>
+        <p  class="visible-xs">Журнал посещения: @Model.Course.Name</p>
+    </div>
+    <div class="panel-body">
+        <table id="journal" class="table table-bordered table-condensed table-striped" 
+               data-request-Remove-url="@Url.Action("RemoveUserMissLesson","Journal")"
+               data-request-Add-url="@Url.Action("AddUserMissLesson","Journal")">
+            <tr>
+                <th> <div>Студент</div> </th>
+                @foreach (var less in Model.Lessons)
+                {
+                    <th class="rotate visible-xs"><div><span>@string.Format("{0:dd.MM.yy}", less.Date.Date)</span></div></th>
+                    <th class="hidden-xs"><div><span>@string.Format("{0:dd.MM.yy}", less.Date.Date)</span></div></th>
+                }
+            </tr>
+            @foreach (var user in Model.Users)
+            {
+                <tr>
+                    <th>@user.Name</th>
+                    @foreach (var less in Model.Lessons)
+                    {
+                        if (less.Users != null && less.Users.Any(_ => _.UserId == user.UserId))
+                        {
+                            <td data-LessonId="@less.LessonId" data-UserId="@user.UserId">@string.Format("H")</td>
+                        }
+                        else
+                        {
+                            <td data-LessonId="@less.LessonId" data-UserId="@user.UserId">  </td>
+                        }
+                    }
+                </tr>
+            }
+        </table>
+    </div>
+    <div class="btn-group pull-right">
+        @Html.PageLinks(Model.PagingInfo, _ => Url.Action("Edit", new { courseId = Model.Course.CourseId, page = _ }))
+    </div> 
+    <div class="panel-footer">
+        @Html.ActionLink("Вернуться к списку", "List", null, new
+   {
+       @class = "btn btn-default"
+   })
+    </div>
+</div>
+
+@section scripts{
+    @Scripts.Render("~/bundles/journal")
+}
+
+

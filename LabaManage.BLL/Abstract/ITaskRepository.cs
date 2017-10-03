@@ -7,6 +7,8 @@ namespace LabaManage.BLL.Abstract
     {
         IEnumerable<TaskModel> Tasks { get; }
 
+        FilterListsModel GetFilterLists();
+
         int GetTasksCount(FilterModel filter);
 
         IEnumerable<TaskModel> GetTasksByFilter(FilterModel filterModel, int page, int pageSize);

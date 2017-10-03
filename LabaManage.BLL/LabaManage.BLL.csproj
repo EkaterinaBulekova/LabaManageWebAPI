@@ -59,7 +59,7 @@
     <Compile Include="Concrete\LessonRepository.cs" />
     <Compile Include="Concrete\TaskRepository.cs" />
     <Compile Include="Concrete\UserRepository.cs" />
-    <Compile Include="Infrastructure\RepositoryModule.cs" />
+    <Compile Include="Infrastructure\RepoModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

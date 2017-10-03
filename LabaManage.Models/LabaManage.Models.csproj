@@ -42,8 +42,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\CourseModel.cs" />
+    <Compile Include="Models\FilterListsModel.cs" />
     <Compile Include="Models\FilterModel.cs" />
     <Compile Include="Models\LessonModel.cs" />
+    <Compile Include="Models\PagingInfo.cs" />
     <Compile Include="Models\RatingModel.cs" />
     <Compile Include="Models\ResultModel.cs" />
     <Compile Include="Models\TagModel.cs" />

@@ -24,6 +24,20 @@ namespace LabaManage.BLL.Concrete
             }
         }
 
+        public IEnumerable<UserModel> Users
+        {
+            get
+            {
+                return this.context.AppUsers.Select(_ => new UserModel
+                {
+                    UserId = _.UserId,
+                    Name = _.Name,
+                    Email = _.Email,
+                    RoleId = _.RoleId
+                }).ToList();
+            }
+        }
+
         public UserModel UserDelete(int id)
         {
             AppUser entryDb = this.context.AppUsers.Find(id);

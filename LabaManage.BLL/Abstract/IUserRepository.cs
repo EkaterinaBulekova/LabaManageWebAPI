@@ -7,6 +7,8 @@ namespace LabaManage.BLL.Abstract
     {
         IEnumerable<RoleModel> Roles { get; }
 
+        IEnumerable<UserModel> Users { get; }
+
         IEnumerable<UserModel> GetUserList(int page, int pageSize);
 
         UserModel GetUserByName(string name);

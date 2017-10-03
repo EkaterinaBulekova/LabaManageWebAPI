@@ -35,6 +35,16 @@ namespace LabaManage.BLL.Concrete
             }
         }
 
+        public FilterListsModel GetFilterLists()
+        {
+            var filterLists = new FilterListsModel
+            {
+                Authors = this.context.Tasks.Select(_ => _.Author).Distinct().ToList(),
+                Topics = this.context.Tasks.Select(_ => _.Topic).Distinct().ToList(),
+                Levels = this.context.Tasks.Select(_ => _.Level.ToString()).Distinct().ToList()
+            };
+            return filterLists;
+        }
 
         #region Task method
 
