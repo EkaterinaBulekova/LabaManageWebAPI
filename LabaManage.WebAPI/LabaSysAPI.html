@@ -1,0 +1,145 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LabaManageSystem</title>
+    <link href="Content/Site.css" rel="stylesheet" type="text/css" />
+    <link href="Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <!--<link href="Content/datepicker.min.css" rel="stylesheet" type="text/css"/>-->
+    <link href="Content/bootstrap-tokenfield.css" rel="stylesheet" type="text/css" />
+    <link href="Content/globalstyle.css" rel="stylesheet" type="text/css" />
+    <link href="Content/jquery-ui.min.css" rel="stylesheet" type="text/css" />
+    <link href="Content/StarsStyle.css" rel="stylesheet" type="text/css" />
+    <!--<link href="Content/TableRotate.css" rel="stylesheet" type="text/css" />-->
+    <script src="Scripts/modernizr-2.8.3.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Классы navbar и navbar-default (базовые классы меню) -->
+        <nav class="navbar navbar-inverse">
+            <!-- Контейнер (определяет ширину Navbar) -->
+            <div class="container-fluid">
+                <!-- Заголовок -->
+                <div class="navbar-header">
+                    <!-- Кнопка «Гамбургер» отображается только в мобильном виде (предназначена для открытия основного содержимого Navbar) -->
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-main" aria-expanded="false" aria-controls="navbar-main">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <!-- Бренд или название сайта (отображается в левой части меню) -->
+                    <a class="nav navbar-brand" href="#">
+                        <span class="hidden-xs">LabaManage</span>
+                        <span class="glyphicon glyphicon-home visible-xs" data-toggle="tooltip" title="LabaManage"></span>
+                    </a>
+                </div>
+                <!-- Основная часть меню (может содержать ссылки, формы и другие элементы) -->
+                <div class="collapse navbar-collapse" id="navbar-main">
+                    <!-- Содержимое основной части -->
+                    <ul class="nav navbar-nav">
+                        <!--<li><a class="btn btn-primary">Пользователи</a></li>
+                        <li><a class="btn btn-primary">Роли</a></li>
+                        <li><a class="btn btn-primary">Учебный план</a></li>
+                        <li><a class="btn btn-primary">Журнал посещаемости</a></li>-->
+                        <li><a>База заданий</a></li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <!--<li><a class="btn btn-primary">Выход</a></li>
+                        <li><a class="btn btn-primary">Логин</a></li>
+                        <li><a class="btn btn-primary">Регистрация</a></li>-->
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div class="container body-content" id="container" data-request-tags-url="">
+            <div>
+                <div class="alert alert-success" hidden></div>
+            </div>
+            <br />
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3> Список заданий </h3>
+                    <div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="tokenfield" value="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-group pull-right">
+                    <a class="btn btn-primary hidden-xs">Добавить задание</a>
+                    <a class="btn btn-primary hidden-xs">Загрузить задания</a>
+                    <a class="btn btn-primary hidden-xs">Скачать задания</a>
+                    <a class="btn btn-primary glyphicon glyphicon-plus visible-xs"></a>
+                    <a class = "btn btn-primary glyphicon glyphicon-upload visible-xs"></a>
+                    <a class = "btn btn-primary glyphicon glyphicon-download visible-xs"></a>
+                </div>
+                <div class="panel-body">
+                    <div style="display:inline-flex">
+                        <span class="hidden-xs">Автор:</span>
+                        <span class="visible-xs glyphicon glyphicon-user"></span>
+                        <select id="author"></select>
+                        <span class="hidden-xs">Тема:</span>
+                        <span class="visible-xs glyphicon glyphicon-bookmark"></span>
+                        <select id="topic"></select>
+                        <span class="hidden-xs">Уровень сложности:</span>
+                        <span class="visible-xs glyphicon glyphicon-scale"></span>
+                        <select id="level"></select>
+                    </div>
+                    <div id="TasksList"
+                         data-request-tasks-url="api/tasks"
+                         data-request-comments-url=""
+                         data-request-taskdelete-url=""
+                         data-request-taskedit-url=""
+                         data-request-commentdelete-url=""
+                         data-request-commentsave-url=""
+                         data-request-tags-url="">
+                    </div>
+                </div>
+                <div id="ButtonsGroup" class="btn-group pull-right">
+                </div>
+            </div>
+            <hr />
+            <footer>
+                <p>&copy; LabaManageSystem</p>
+            </footer>
+        </div>
+    </div>
+    <script src="Scripts/jquery-3.2.1.min.js"></script>
+    <script src="Scripts/jquery-ui-1.12.1.min.js"></script>
+    <script src="Scripts/bootstrap.min.js"></script>
+    <script src="Scripts/bootstrap-tokenfield.js"></script>
+    <!--<script src="Scripts/datepicker.min.js"></script>
+    <script src="Scripts/JDatePickerScript.js"></script>
+    <script src="Scripts/JJournalScript.js"></script>-->
+    <script src="Scripts/JTaskRatingScript.js"></script>
+    <script src="Scripts/JTokens.js"></script>
+    <script type="text/javascript">
+        var uri = 'api/tasks/filters';
+
+        function AddOption(data, target){
+            $('<option>', {
+                value: "all",
+                text: "all"
+            }).appendTo($(target));
+            $.each(data, function (key, item) {
+                $('<option>', {
+                    value: item,
+                    text: item
+                }).appendTo($(target));
+            })
+        }
+
+        $(document).ready(function () {
+            // Send an AJAX request
+            $.getJSON(uri)
+                .done(function (data) {
+                    AddOption(data.Authors, "#author");
+                    AddOption(data.Topics, "#topic");
+                    AddOption(data.Levels, "#level");
+                });
+        });
+
+    </script>
+</body>
+</html>

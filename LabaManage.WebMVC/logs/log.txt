@@ -27,3 +27,4 @@ Parameter name: parameters
 2017-09-29 12:56:24,217 [8] INFO  - User Ivan logged in
 2017-09-29 13:01:07,795 [8] INFO  - User Vasiliy logged in
 2017-10-03 16:50:18,352 [10] INFO  - User Ivan logged in
+2017-10-05 11:58:42,898 [7] INFO  - User Ivan logged in

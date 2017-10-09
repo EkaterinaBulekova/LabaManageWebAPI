@@ -6,7 +6,7 @@ using LabaManage.Models.Models;
 
 namespace LabaManageWebAPI.Controllers
 {
-    [RoutePrefix("api/tag")]
+    [RoutePrefix("api/tags")]
     public class TagController : ApiController
     {
         private ITaskRepository repository;
@@ -17,10 +17,10 @@ namespace LabaManageWebAPI.Controllers
         }
 
         [Route("")]
-        public IEnumerable<TagModel> GetAllTags()
+        public IHttpActionResult GetAllTags()
         {
-            var tags = this.repository.GetTags(null).ToList();
-            return tags;
+            var tags = this.repository.GetTags(null).Select(_ => new { value = _.Name, label = _.Name }).ToList();
+            return this.Ok(tags);
         }
 
         [Route("{id:int}")]

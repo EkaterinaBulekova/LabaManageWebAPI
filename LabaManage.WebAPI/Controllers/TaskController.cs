@@ -3,24 +3,21 @@ using System.Linq;
 using System.Web.Http;
 using LabaManage.BLL.Abstract;
 using LabaManage.Models.Models;
+using LabaManage.WebAPI.ViewModels.Task;
 
 namespace LabaManageWebAPI.Controllers
 {
-    [RoutePrefix("api/task")]
+    [RoutePrefix("api/tasks")]
     public class TaskController : ApiController
     {
+        private const int PageSize = 5;
+        private const int DefaultPage = 1;
+        private const string DefultString = "all";
         private ITaskRepository repository;
 
         public TaskController(ITaskRepository repo)
         {
             this.repository = repo;
-        }
-
-        [Route("")]
-        public IEnumerable<TaskModel> GetAllTasks()
-        {
-            var tasks = this.repository.GetTasksByFilter(new FilterModel(), 1, 10).ToList();
-            return tasks;
         }
 
         [Route("{id:int}")]
@@ -62,7 +59,11 @@ namespace LabaManageWebAPI.Controllers
         [Route("{id:int}/ratings")]
         public IHttpActionResult GetRatingsByTask(int id)
         {
-            var ratings = this.repository.GetRatingsByTask(id, 1, 100);
+            var ratings = new ComentListJson
+            {
+                Ratings = this.repository.GetRatingsByTask(id, DefaultPage, PageSize).ToList(),
+                CurrentUserRating = this.repository.GetRatingByTaskUser(/*User.Identity.Name*/"Ivan", id)
+            };
             if (ratings == null)
             {
                 return this.NotFound();
@@ -71,34 +72,19 @@ namespace LabaManageWebAPI.Controllers
             return this.Ok(ratings);
         }
 
-        [Route("{id:int}/avgrating")]
-        public IHttpActionResult GetAvgRatingByTask(int id)
+        [Route("~/api/author/{author}/topic/{topic}/level/{level}/tags/{tags}/tasks/page/{page:int}")]
+        public IHttpActionResult GetTasksByAuthor(string author, string topic, string level, string tags, int page = DefaultPage)
         {
-            var ratings = this.repository.GetAvgRatingByTaskId(id);
-            if (ratings < 0)
-            {
-                return this.NotFound();
-            }
-
-            return this.Ok(ratings);
-        }
-
-        [Route("{id:int}/user/{name}/ratings")]
-        public IHttpActionResult GetRatingsByUserTask(int id, string name)
-        {
-            var ratings = this.repository.GetRatingByTaskUser(name, id);
-            if (ratings == null)
-            {
-                return this.NotFound();
-            }
-
-            return this.Ok(ratings);
-        }
-
-        [Route("~/api/topic/{name}/tasks")]
-        public IHttpActionResult GetTasksByTopic(string name)
-        {
-            var tasks = this.repository.GetTasksByFilter(new FilterModel { Topic = name }, 1, 100);
+            int level_temp;
+            var tasks = this.GetTasks(
+                new FilterModel
+                {
+                    Author = author != DefultString ? author : string.Empty,
+                    Level = level != DefultString && int.TryParse(level, out level_temp) ? level_temp : 0,
+                    Topic = topic != DefultString ? topic : string.Empty,
+                    Tags = tags != DefultString ? tags : string.Empty
+                },
+                page);
             if (tasks == null)
             {
                 return this.NotFound();
@@ -107,28 +93,40 @@ namespace LabaManageWebAPI.Controllers
             return this.Ok(tasks);
         }
 
-        [Route("~/api/author/{name}/tasks")]
-        public IHttpActionResult GetTasksByAuthor(string name)
+        [Route("filters")]
+        public FilterListsModel GetAllFilters()
         {
-            var tasks = this.repository.GetTasksByFilter(new FilterModel { Author = name }, 1, 100);
-            if (tasks == null)
-            {
-                return this.NotFound();
-            }
-
-            return this.Ok(tasks);
+            var filterlists = this.repository.GetFilterLists();
+            return filterlists;
         }
 
-        [Route("~/api/level/{level:int}/tasks")]
-        public IHttpActionResult GetTasksByLevel(int level)
+        private ListJsonModel GetTasks(FilterModel filter, int page = DefaultPage)
         {
-            var tasks = this.repository.GetTasksByFilter(new FilterModel { Level = level }, 1, 100);
-            if (tasks == null)
+            int totalItems = this.repository.GetTasksCount(filter);
+            int totalPages = totalItems / PageSize;
+            if ((totalItems % PageSize) > 0)
             {
-                return this.NotFound();
+                totalPages++;
             }
 
-            return this.Ok(tasks);
+            if (totalPages > 3)
+            {
+                totalPages = 3;
+            }
+
+            var result = new ListJsonModel
+            {
+                TotalPages = totalPages,
+                Tasks = this.repository.GetTasksByFilter(filter, DefaultPage, PageSize)
+                    .Select(_ => new TaskViewModel
+                    {
+                        Task = _,
+                        PercentFeature = this.repository.GetRatingsByTaskPercents(_.TaskId),
+                        RatingsCount = this.repository.GetRatingsByTaskCount(_.TaskId),
+                        AvgRating = this.repository.GetAvgRatingByTaskId(_.TaskId)
+                    })
+            };
+            return result;
         }
     }
 }
